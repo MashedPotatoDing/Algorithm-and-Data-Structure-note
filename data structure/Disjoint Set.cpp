@@ -1,3 +1,4 @@
+/*by Zhaobo Ding*/
 class DisJointSet
 {
 	private:
