@@ -1,3 +1,4 @@
+// user should call clean() finally to avoid memory leak
 class AVL
 {
 	private:
@@ -5,14 +6,15 @@ class AVL
 		{
 			node *left, *right;
 			int key, height;
-		}*avl;
+			// height stores the largest distance from current node down to a leaf node
+		}*avl; // avl is the pointer to the root of AVL tree
 
-		struct node *newnode(int k)
+		struct node *newnode(int k) // create a new pre-configured node for AVL tree
 		{
 			node *ans = new struct node;
 			ans->left = ans->right = NULL;
 			ans->key = k;
-			ans->height = 1;
+			ans->height = 1; // the height of a leaf node is 1
 			return ans;
 		}
 
@@ -79,10 +81,11 @@ class AVL
 			else
 				root->right = insert_process(k, root->right);
 
+			// after inserting the node, we will then make sure the BST is balanced
 			update_height(root);
 			int diff = get_height(root->left) - get_height(root->right);
 
-			if (diff > 1)
+			if (diff > 1) // the left subtree is "heavier"
 				if (k < root->left->key)
 					return right_rotate(root);
 				else
@@ -91,7 +94,7 @@ class AVL
 					return right_rotate(root);
 				}
 
-			if (diff < -1)
+			if (diff < -1) // the right subtree is "heavier"
 				if (k > root->right->key)
 					return left_rotate(root);
 				else
@@ -124,6 +127,65 @@ class AVL
 			delete root;
 		}
 
+		struct node *erase(int k, struct node *root)
+		{
+			if (root == NULL) return NULL;
+
+			if (k < root->key)
+				root->left = erase(k, root->left);
+			else if (k > root->key)
+				root->right = erase(k, root->right);
+			else
+			{
+				if (root->left == NULL)
+				{
+					struct node *p = root->right;
+					delete root;
+					return p;
+				}
+				else if (root->right == NULL)
+				{
+					struct node *p = root->left;
+					delete root;
+					return p;
+				}
+				else
+				{
+					/* if neither left nor right child is empty, we find the leftmost node in
+					right subtree to swap with the current node, which brings no conflict in
+					AVL tree, but will make it easier for us to delete */
+					struct node *p = root->right;
+					while (p->left)
+						p = p->left;
+					root->key = p->key;
+					root->right = erase(p->key, root->right);
+				}
+			}
+
+			update_height(root);
+			int diff = get_height(root->left) - get_height(root->right);
+
+			if (diff > 1)
+			{
+				int sub_diff = get_height(root->left->left) - get_height(root->left->right);
+				if (sub_diff < 0)
+					root->left = left_rotate(root->left);
+
+				return right_rotate(root);
+			}
+
+			if (diff < -1)
+			{
+				int sub_diff = get_height(root->right->left) - get_height(root->right->right);
+				if (sub_diff > 0)
+					root->right = right_rotate(root->right);
+
+				return left_rotate(root);
+			}
+
+			return root;
+		}
+
 	public :
 		AVL()
 		{
@@ -143,5 +205,10 @@ class AVL
 		void clean()
 		{
 			discard(avl);
+		}
+
+		void remove(int k)
+		{
+			avl = erase(k, avl);
 		}
 };
