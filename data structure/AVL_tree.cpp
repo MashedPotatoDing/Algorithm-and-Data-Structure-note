@@ -1,3 +1,4 @@
+/*by Zhaobo Ding*/
 // user should call clean() finally to avoid memory leak
 class AVL
 {
