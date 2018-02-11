@@ -1,3 +1,4 @@
+/*by Zhaobo Ding*/
 const int CharSize = 26, CharBase = 'a';
 
 class Trie
