@@ -1,11 +1,12 @@
-const int MaxN = 100000;
+/*by Zhaobo Ding*/
+const int MaxN = 100000; // MaxN stores the length of BIT array.
 
 class BIT
 {
 	private:
 		int tree[MaxN + 1], n = MaxN;
 
-		int lowbit(int x)
+		int lowbit(int x) // calculate the leftmost 1 in x
 		{
 			return x & (-x);
 		}
