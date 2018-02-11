@@ -1,3 +1,4 @@
+/*by Zhaobo Ding*/
 const int MaxSize = 100000; // MaxSize is the capability of the heap
 
 class BinaryHeap
