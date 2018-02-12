@@ -27,7 +27,6 @@ int kmp(string text, string pattern) // kmp() searches text for pattern
 		// when the next character matches directly go to the following one
 			j++;
 		else // otherwise see if a smaller part of pattern can match
-		{
 			while (j)
 			{
 				j = next[j];
@@ -37,7 +36,6 @@ int kmp(string text, string pattern) // kmp() searches text for pattern
 					break;
 				}
 			}
-		}
 
 		if (j == lp)
 			return i - pt + 1;
