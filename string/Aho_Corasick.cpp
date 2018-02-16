@@ -7,7 +7,20 @@ struct trie_node
 	trie_node *fail;
 	trie_node *children[CharSize];
 	bool EOW;
-}*root;
+};
+
+struct trie_node *new_node()
+{
+	struct trie_node *ans = new struct trie_node;
+	ans->count = ans->EOW = 0;
+	ans->fail = NULL;
+	for (int i = 0; i < CharSize; i++)
+		ans->children[i] = NULL;
+
+	return ans;
+}
+
+struct trie_node *root = new_node();
 
 void insert_dict(string str)
 {
@@ -18,14 +31,7 @@ void insert_dict(string str)
 	{
 		int x = str[i] - CharBase;
 		if (p->children[x] == NULL)
-		{
-			p->children[x] = new struct trie_node;
-			for (int j = 0; j < CharSize; j++)
-				p->children[x]->children[j] = NULL;
-			p->children[x]->count = 0;
-			p->children[x]->fail = NULL;
-			p->children[x]->EOW = false;
-		}
+			p->children[x] = new_node();
 		p = p->children[x];
 	}
 
