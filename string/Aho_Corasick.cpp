@@ -9,9 +9,9 @@ struct trie_node
 	bool EOW;
 };
 
-struct trie_node *new_node()
+trie_node *new_node()
 {
-	struct trie_node *ans = new struct trie_node;
+	trie_node *ans = new trie_node;
 	ans->count = ans->EOW = 0;
 	ans->fail = NULL;
 	for (int i = 0; i < CharSize; i++)
@@ -20,7 +20,7 @@ struct trie_node *new_node()
 	return ans;
 }
 
-struct trie_node *root = new_node();
+trie_node *root = new_node();
 
 void insert_dict(string str)
 {
@@ -57,6 +57,7 @@ void fail_pointer()
 	while (!q.empty())
 	{
 		trie_node *t = q.front();
+		q.pop();
 		for (int i = 0; i < CharSize; i++)
 		{
 			if (t->children[i] == NULL)
