@@ -1,3 +1,5 @@
+/*by Zhaobo Ding*/
+
 /* We should call insert_dict(word) first to add words to the "dictionary", and then call fail_pointer() to
 	build the fail pointer for initialization. Then, we call aho_corasick(text) to count the number of times
 	every word appears in text. The result of function aho_corasick(text) will be stored in the trie. When
