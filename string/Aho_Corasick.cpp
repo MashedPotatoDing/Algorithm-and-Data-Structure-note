@@ -1,15 +1,19 @@
+/* We should call insert_dict(word) first to add words to the "dictionary", and then call fail_pointer() to
+	build the fail pointer for initialization. Then, we call aho_corasick(text) to count the number of times
+	every word appears in text. The result of function aho_corasick(text) will be stored in the trie. When
+	we done the work, call free() for the avoidance of memory leak. */
 const int CharSize = 26;
 const char CharBase = 'a';
 
 struct trie_node
 {
-	int count;
+	int count; // we store the number of times a word appears here
 	trie_node *fail;
 	trie_node *children[CharSize];
-	bool EOW;
+	bool EOW; // record if the node here in trie is the end of a word
 };
 
-trie_node *new_node()
+trie_node *new_node() // create a new node
 {
 	trie_node *ans = new trie_node;
 	ans->count = ans->EOW = 0;
@@ -30,7 +34,7 @@ void insert_dict(string str)
 	for (int i = 0; i < l; i++)
 	{
 		int x = str[i] - CharBase;
-		if (p->children[x] == NULL)
+		if (p->children[x] == NULL) // create new node for new word
 			p->children[x] = new_node();
 		p = p->children[x];
 	}
@@ -42,7 +46,7 @@ void free(trie_node *x)
 {
 	if (x == NULL) return;
 	for (int i = 0; i < CharSize; i++)
-		delete x->children[i];
+		free(x->children[i]);
 
 	delete x->fail;
 	delete x;
@@ -63,22 +67,19 @@ void fail_pointer()
 			if (t->children[i] == NULL)
 				continue;
 
-			if (t == root)
-				t->children[i]->fail = root;
-			else
+			t->children[i]->fail = root;
+			if (t != root)
 			{
 				trie_node *p = t->fail;
 				while (p)
 				{
-					if (p->children[i])
+					if (p->children[i]) // try to find a matched suffix
 					{
 						t->children[i]->fail = p->children[i];
 						break;
 					}
 					p = p->fail;
 				}
-
-				t->children[i]->fail = root;
 			}
 
 			q.push(t->children[i]);
@@ -94,11 +95,16 @@ void aho_corasick(string text)
 	for (int i = 0; i < l; i++)
 	{
 		int x = text[i] - CharBase;
+		if (x < 0 || x >= CharSize) // deal with word not in trie
+		{
+			p = root;
+			continue;
+		}
 
 		if (p->children[x])
 			p = p->children[x];
 		else
-			while (p != root)
+			while (p != root) // when fail to match, try to find a shorter match with fail pointer
 			{
 				p = p->fail;
 				if (p->children[x])
@@ -108,6 +114,11 @@ void aho_corasick(string text)
 				}
 			}
 
-		if (p->EOW) p->count++;
+		trie_node *q = p; // update word number recursively
+		while (q != root)
+		{
+			if (q->EOW) q->count++;
+			q = q->fail;
+		}
 	}
 }
